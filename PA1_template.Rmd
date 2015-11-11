@@ -93,7 +93,7 @@ for (i in 1:nrow(newactivity)) {
 }
 head(newactivity)
 
-# 4 histogram of the total number of steps taken each day
+# 4 Histogram of the total number of steps taken each day
 tapply(newactivity$steps,newactivity$date,sum)
 newtspd <- tapply(newactivity$steps,newactivity$date,sum)
 hist(newtspd, main = "Histogram of daily number of steps", density = 20,

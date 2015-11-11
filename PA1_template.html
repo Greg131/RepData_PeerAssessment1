@@ -171,7 +171,9 @@ which.max(dailypattern)</code></pre>
 <pre class="r"><code># 1 Number of missing values in the dataset
 sum(is.na(activity$steps))</code></pre>
 <pre><code>## [1] 2304</code></pre>
-<pre class="r"><code># 2 &amp; 3 Filling NA using the mean of the corresponding 5' interval in a new dataset
+<pre class="r"><code># 2 Strategy for filling in all of the missing values in the dataset
+# Filling NA using the mean of the corresponding 5'interval in a new dataset
+# 3 construction of the new dataset
 newactivity &lt;- activity
 for (i in 1:nrow(newactivity)) {
         if (is.na(newactivity$steps[i])) {

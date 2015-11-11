@@ -166,7 +166,9 @@ sum(is.na(activity$steps))
 ```
 
 ```r
-# 2 & 3 Filling NA using the mean of the corresponding 5' interval in a new dataset
+# 2 Strategy for filling in all of the missing values in the dataset
+# Filling NA using the mean of the corresponding 5'interval in a new dataset
+# 3 construction of the new dataset
 newactivity <- activity
 for (i in 1:nrow(newactivity)) {
         if (is.na(newactivity$steps[i])) {

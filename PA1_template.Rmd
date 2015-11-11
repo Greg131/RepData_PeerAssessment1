@@ -6,17 +6,15 @@ output:
 ---
 
 
-## Loading e data
+## Loading ans preprocessing the data
 
 ```{r, echo=TRUE}
+# 1 Loading the data
 setwd("~/Dropbox/Datascience/Universite_Johns-Hopkins/Recherche_reproductible/RepData_PeerAssessment1")
 activity <- read.csv("activity.csv")
-```
 
-## Preprocessing the data - Add column with time
-
-```{r, echo=TRUE}
-# convertion of intervalle and date in POSIXct
+# 2 Procees data
+# convertion of interval and date in POSIXct
 activity$time <- as.character(activity$interval)
 activity$timemissingcar <- 4-nchar(activity$time)
 
@@ -34,6 +32,8 @@ activity$datetime <- paste(as.POSIXct(activity$date),activity$time)
 activity$datetime <- strptime(activity$datetime, "%Y-%m-%d %H%M")
 activity <- activity[, - c(4:5)]
 
+# Creation of a dataset without missing values
+# 8 full days are missing
 activity.complete <- activity[complete.cases(activity$steps),]
 
 head(activity)
@@ -44,35 +44,45 @@ head(activity.complete)
 ## What is mean total number of steps taken per day?
 
 ```{r, echo=TRUE}
-tapply(activity$steps,activity$date,sum)
-tspd <- tapply(activity$steps,activity$date,sum)
+
+# 1 total number of steps taken per day
+tapply(activity.complete$steps,activity.complete$date,sum)
+# 2 histogram of the total number of steps taken each day
+tspd <- tapply(activity.complete$steps,activity.complete$date,sum)
 hist(tspd, main = "Histogram of daily number of steps", density = 20,
      xlab = "Total steps per day", col = "steelblue", border = "red")
-```
-
-
-## What is the mean and median of steps taken per day?
-```{r, echo=TRUE}
-tapply(activity$steps,activity$date,mean)
-tapply(activity$steps,activity$date,median)
+# 3 mean and median of the total number of steps taken per day
+mean(tspd, na.rm = TRUE)
+median(tspd, na.rm = TRUE)
 ```
 
 
 ## What is the average daily activity pattern?
 ```{r, echo=TRUE}
+# 1 time series plot
 # Let's use activity.complete to exclude missing values
 dailypattern <- tapply(activity.complete$steps,activity.complete$interval,mean)
 plot(dailypattern, type = 'l')
 # Index is corresponding the the 5' series : 288 * 5' every days
+# ...we discover that people usually do not move when they spleep...
+
+# 2 Which 5-minute interval, 
+# on average across all the days in the dataset, 
+# contains the maximum number of steps?
+which.max(dailypattern)
+# 08:35 in the morning 104 steps in average...
+# Going to work in the morning
+
 ```
+
 
 
 ## Imputing missing values
 
 ```{r, echo=TRUE}
-# Total number of missing values in the dataset
+# 1 Number of missing values in the dataset
 sum(is.na(activity$steps))
-# Filling NA using the mean of the corresponding 5' interval
+# 2 & 3 Filling NA using the mean of the corresponding 5' interval in a new dataset
 newactivity <- activity
 for (i in 1:nrow(newactivity)) {
         if (is.na(newactivity$steps[i])) {
@@ -80,18 +90,20 @@ for (i in 1:nrow(newactivity)) {
         }
 }
 head(newactivity)
-# histogram of the total number of steps taken each day
 
-
+# 4 histogram of the total number of steps taken each day
 tapply(newactivity$steps,newactivity$date,sum)
 newtspd <- tapply(newactivity$steps,newactivity$date,sum)
 hist(newtspd, main = "Histogram of daily number of steps", density = 20,
      xlab = "Total steps per day", col = "steelblue", border = "red")
 
-tapply(newactivity$steps,newactivity$date,mean)
-tapply(newactivity$steps,newactivity$date,median)
+mean(newtspd)
+median(newtspd)
 
-# What is the impact of imputing missing data on the estimates of the total daily number of steps?
+# Impact of imputing missing data on the estimates of the total daily number of steps:
+# No impact on mean as missing values are 8 full days and are filled using mean ...
+# Nevertheless the distribution is impacted by reduction of standard variance
+# (more days are close to the mean!)
 
 ```
 
@@ -101,7 +113,7 @@ tapply(newactivity$steps,newactivity$date,median)
 
 
 ```{r, echo=TRUE}
-# Creating new factor variable weekday/weekend
+# 1 Creating new factor variable weekday/weekend
 newactivity$weekday <- "weekday"
 for (i in 1:nrow(newactivity)) {
         if ((weekdays(newactivity$datetime[i]) == "Samedi") | (weekdays(newactivity$datetime[i]) == "Dimanche")) {
@@ -111,13 +123,19 @@ for (i in 1:nrow(newactivity)) {
 newactivity$weekday <- as.factor(newactivity$weekday)
 str(newactivity)
 
-library(lattice)
-#state <- data.frame(state.x77, region = state.region)
-#dailypattern <- tapply(newactivity$steps,newactivity$interval,mean)
+# 2 panel plot weekday/weekend
+newactivityweekday <- newactivity[newactivity$weekday == "weekday",]
+newactivityweekend <- newactivity[newactivity$weekday == "weekend",]
 
+dailypatternweekday <- tapply(newactivityweekday$steps,newactivityweekday$interval,mean)
+dailypatternweekend <- tapply(newactivityweekend$steps,newactivityweekend$interval,mean)
 
-#xyplot(Life.Exp ~ Income | region, data = newactivity, layout = c(1,2))
+par(mfrow = c(2,1), mar = c(4.1,4.1,4.1,2.1)) #  initialiser
 
+plot(dailypatternweekday, type = 'l', main = "Weekday")
+plot(dailypatternweekend, type = 'l', main = "Weekend")
+
+# Activity is more spread over the day during weekends
 ```
 
 

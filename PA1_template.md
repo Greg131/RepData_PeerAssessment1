@@ -1,19 +1,16 @@
 # Reproducible Research: Peer Assessment 1
 
 
-## Loading e data
+## Loading ans preprocessing the data
 
 
 ```r
+# 1 Loading the data
 setwd("~/Dropbox/Datascience/Universite_Johns-Hopkins/Recherche_reproductible/RepData_PeerAssessment1")
 activity <- read.csv("activity.csv")
-```
 
-## Preprocessing the data - Add column with time
-
-
-```r
-# convertion of intervalle and date in POSIXct
+# 2 Procees data
+# convertion of interval and date in POSIXct
 activity$time <- as.character(activity$interval)
 activity$timemissingcar <- 4-nchar(activity$time)
 
@@ -31,6 +28,8 @@ activity$datetime <- paste(as.POSIXct(activity$date),activity$time)
 activity$datetime <- strptime(activity$datetime, "%Y-%m-%d %H%M")
 activity <- activity[, - c(4:5)]
 
+# Creation of a dataset without missing values
+# 8 full days are missing
 activity.complete <- activity[complete.cases(activity$steps),]
 
 head(activity)
@@ -65,7 +64,8 @@ head(activity.complete)
 
 
 ```r
-tapply(activity$steps,activity$date,sum)
+# 1 total number of steps taken per day
+tapply(activity.complete$steps,activity.complete$date,sum)
 ```
 
 ```
@@ -94,95 +94,70 @@ tapply(activity$steps,activity$date,sum)
 ```
 
 ```r
-tspd <- tapply(activity$steps,activity$date,sum)
+# 2 histogram of the total number of steps taken each day
+tspd <- tapply(activity.complete$steps,activity.complete$date,sum)
 hist(tspd, main = "Histogram of daily number of steps", density = 20,
      xlab = "Total steps per day", col = "steelblue", border = "red")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
-
-
-## What is the mean and median of steps taken per day?
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 ```r
-tapply(activity$steps,activity$date,mean)
+# 3 mean and median of the total number of steps taken per day
+mean(tspd, na.rm = TRUE)
 ```
 
 ```
-## 2012-10-01 2012-10-02 2012-10-03 2012-10-04 2012-10-05 2012-10-06 
-##         NA  0.4375000 39.4166667 42.0694444 46.1597222 53.5416667 
-## 2012-10-07 2012-10-08 2012-10-09 2012-10-10 2012-10-11 2012-10-12 
-## 38.2465278         NA 44.4826389 34.3750000 35.7777778 60.3541667 
-## 2012-10-13 2012-10-14 2012-10-15 2012-10-16 2012-10-17 2012-10-18 
-## 43.1458333 52.4236111 35.2048611 52.3750000 46.7083333 34.9166667 
-## 2012-10-19 2012-10-20 2012-10-21 2012-10-22 2012-10-23 2012-10-24 
-## 41.0729167 36.0937500 30.6284722 46.7361111 30.9652778 29.0104167 
-## 2012-10-25 2012-10-26 2012-10-27 2012-10-28 2012-10-29 2012-10-30 
-##  8.6527778 23.5347222 35.1354167 39.7847222 17.4236111 34.0937500 
-## 2012-10-31 2012-11-01 2012-11-02 2012-11-03 2012-11-04 2012-11-05 
-## 53.5208333         NA 36.8055556 36.7048611         NA 36.2465278 
-## 2012-11-06 2012-11-07 2012-11-08 2012-11-09 2012-11-10 2012-11-11 
-## 28.9375000 44.7326389 11.1770833         NA         NA 43.7777778 
-## 2012-11-12 2012-11-13 2012-11-14 2012-11-15 2012-11-16 2012-11-17 
-## 37.3784722 25.4722222         NA  0.1423611 18.8923611 49.7881944 
-## 2012-11-18 2012-11-19 2012-11-20 2012-11-21 2012-11-22 2012-11-23 
-## 52.4652778 30.6979167 15.5277778 44.3993056 70.9270833 73.5902778 
-## 2012-11-24 2012-11-25 2012-11-26 2012-11-27 2012-11-28 2012-11-29 
-## 50.2708333 41.0902778 38.7569444 47.3819444 35.3576389 24.4687500 
-## 2012-11-30 
-##         NA
+## [1] 10766.19
 ```
 
 ```r
-tapply(activity$steps,activity$date,median)
+median(tspd, na.rm = TRUE)
 ```
 
 ```
-## 2012-10-01 2012-10-02 2012-10-03 2012-10-04 2012-10-05 2012-10-06 
-##         NA          0          0          0          0          0 
-## 2012-10-07 2012-10-08 2012-10-09 2012-10-10 2012-10-11 2012-10-12 
-##          0         NA          0          0          0          0 
-## 2012-10-13 2012-10-14 2012-10-15 2012-10-16 2012-10-17 2012-10-18 
-##          0          0          0          0          0          0 
-## 2012-10-19 2012-10-20 2012-10-21 2012-10-22 2012-10-23 2012-10-24 
-##          0          0          0          0          0          0 
-## 2012-10-25 2012-10-26 2012-10-27 2012-10-28 2012-10-29 2012-10-30 
-##          0          0          0          0          0          0 
-## 2012-10-31 2012-11-01 2012-11-02 2012-11-03 2012-11-04 2012-11-05 
-##          0         NA          0          0         NA          0 
-## 2012-11-06 2012-11-07 2012-11-08 2012-11-09 2012-11-10 2012-11-11 
-##          0          0          0         NA         NA          0 
-## 2012-11-12 2012-11-13 2012-11-14 2012-11-15 2012-11-16 2012-11-17 
-##          0          0         NA          0          0          0 
-## 2012-11-18 2012-11-19 2012-11-20 2012-11-21 2012-11-22 2012-11-23 
-##          0          0          0          0          0          0 
-## 2012-11-24 2012-11-25 2012-11-26 2012-11-27 2012-11-28 2012-11-29 
-##          0          0          0          0          0          0 
-## 2012-11-30 
-##         NA
+## [1] 10765
 ```
 
 
 ## What is the average daily activity pattern?
 
 ```r
+# 1 time series plot
 # Let's use activity.complete to exclude missing values
 dailypattern <- tapply(activity.complete$steps,activity.complete$interval,mean)
 plot(dailypattern, type = 'l')
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 ```r
 # Index is corresponding the the 5' series : 288 * 5' every days
+# ...we discover that people usually do not move when they spleep...
+
+# 2 Which 5-minute interval, 
+# on average across all the days in the dataset, 
+# contains the maximum number of steps?
+which.max(dailypattern)
 ```
+
+```
+## 835 
+## 104
+```
+
+```r
+# 08:35 in the morning 104 steps in average...
+# Going to work in the morning
+```
+
 
 
 ## Imputing missing values
 
 
 ```r
-# Total number of missing values in the dataset
+# 1 Number of missing values in the dataset
 sum(is.na(activity$steps))
 ```
 
@@ -191,7 +166,7 @@ sum(is.na(activity$steps))
 ```
 
 ```r
-# Filling NA using the mean of the corresponding 5' interval
+# 2 & 3 Filling NA using the mean of the corresponding 5' interval in a new dataset
 newactivity <- activity
 for (i in 1:nrow(newactivity)) {
         if (is.na(newactivity$steps[i])) {
@@ -212,9 +187,7 @@ head(newactivity)
 ```
 
 ```r
-# histogram of the total number of steps taken each day
-
-
+# 4 histogram of the total number of steps taken each day
 tapply(newactivity$steps,newactivity$date,sum)
 ```
 
@@ -249,68 +222,29 @@ hist(newtspd, main = "Histogram of daily number of steps", density = 20,
      xlab = "Total steps per day", col = "steelblue", border = "red")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 ```r
-tapply(newactivity$steps,newactivity$date,mean)
+mean(newtspd)
 ```
 
 ```
-## 2012-10-01 2012-10-02 2012-10-03 2012-10-04 2012-10-05 2012-10-06 
-## 37.3825996  0.4375000 39.4166667 42.0694444 46.1597222 53.5416667 
-## 2012-10-07 2012-10-08 2012-10-09 2012-10-10 2012-10-11 2012-10-12 
-## 38.2465278 37.3825996 44.4826389 34.3750000 35.7777778 60.3541667 
-## 2012-10-13 2012-10-14 2012-10-15 2012-10-16 2012-10-17 2012-10-18 
-## 43.1458333 52.4236111 35.2048611 52.3750000 46.7083333 34.9166667 
-## 2012-10-19 2012-10-20 2012-10-21 2012-10-22 2012-10-23 2012-10-24 
-## 41.0729167 36.0937500 30.6284722 46.7361111 30.9652778 29.0104167 
-## 2012-10-25 2012-10-26 2012-10-27 2012-10-28 2012-10-29 2012-10-30 
-##  8.6527778 23.5347222 35.1354167 39.7847222 17.4236111 34.0937500 
-## 2012-10-31 2012-11-01 2012-11-02 2012-11-03 2012-11-04 2012-11-05 
-## 53.5208333 37.3825996 36.8055556 36.7048611 37.3825996 36.2465278 
-## 2012-11-06 2012-11-07 2012-11-08 2012-11-09 2012-11-10 2012-11-11 
-## 28.9375000 44.7326389 11.1770833 37.3825996 37.3825996 43.7777778 
-## 2012-11-12 2012-11-13 2012-11-14 2012-11-15 2012-11-16 2012-11-17 
-## 37.3784722 25.4722222 37.3825996  0.1423611 18.8923611 49.7881944 
-## 2012-11-18 2012-11-19 2012-11-20 2012-11-21 2012-11-22 2012-11-23 
-## 52.4652778 30.6979167 15.5277778 44.3993056 70.9270833 73.5902778 
-## 2012-11-24 2012-11-25 2012-11-26 2012-11-27 2012-11-28 2012-11-29 
-## 50.2708333 41.0902778 38.7569444 47.3819444 35.3576389 24.4687500 
-## 2012-11-30 
-## 37.3825996
+## [1] 10766.19
 ```
 
 ```r
-tapply(newactivity$steps,newactivity$date,median)
+median(newtspd)
 ```
 
 ```
-## 2012-10-01 2012-10-02 2012-10-03 2012-10-04 2012-10-05 2012-10-06 
-##   34.11321    0.00000    0.00000    0.00000    0.00000    0.00000 
-## 2012-10-07 2012-10-08 2012-10-09 2012-10-10 2012-10-11 2012-10-12 
-##    0.00000   34.11321    0.00000    0.00000    0.00000    0.00000 
-## 2012-10-13 2012-10-14 2012-10-15 2012-10-16 2012-10-17 2012-10-18 
-##    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000 
-## 2012-10-19 2012-10-20 2012-10-21 2012-10-22 2012-10-23 2012-10-24 
-##    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000 
-## 2012-10-25 2012-10-26 2012-10-27 2012-10-28 2012-10-29 2012-10-30 
-##    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000 
-## 2012-10-31 2012-11-01 2012-11-02 2012-11-03 2012-11-04 2012-11-05 
-##    0.00000   34.11321    0.00000    0.00000   34.11321    0.00000 
-## 2012-11-06 2012-11-07 2012-11-08 2012-11-09 2012-11-10 2012-11-11 
-##    0.00000    0.00000    0.00000   34.11321   34.11321    0.00000 
-## 2012-11-12 2012-11-13 2012-11-14 2012-11-15 2012-11-16 2012-11-17 
-##    0.00000    0.00000   34.11321    0.00000    0.00000    0.00000 
-## 2012-11-18 2012-11-19 2012-11-20 2012-11-21 2012-11-22 2012-11-23 
-##    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000 
-## 2012-11-24 2012-11-25 2012-11-26 2012-11-27 2012-11-28 2012-11-29 
-##    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000 
-## 2012-11-30 
-##   34.11321
+## [1] 10766.19
 ```
 
 ```r
-# What is the impact of imputing missing data on the estimates of the total daily number of steps?
+# Impact of imputing missing data on the estimates of the total daily number of steps:
+# No impact on mean as missing values are 8 full days and are filled using mean ...
+# Nevertheless the distribution is impacted by reduction of standard variance
+# (more days are close to the mean!)
 ```
 
 
@@ -320,7 +254,7 @@ tapply(newactivity$steps,newactivity$date,median)
 
 
 ```r
-# Creating new factor variable weekday/weekend
+# 1 Creating new factor variable weekday/weekend
 newactivity$weekday <- "weekday"
 for (i in 1:nrow(newactivity)) {
         if ((weekdays(newactivity$datetime[i]) == "Samedi") | (weekdays(newactivity$datetime[i]) == "Dimanche")) {
@@ -341,12 +275,23 @@ str(newactivity)
 ```
 
 ```r
-library(lattice)
-#state <- data.frame(state.x77, region = state.region)
-#dailypattern <- tapply(newactivity$steps,newactivity$interval,mean)
+# 2 panel plot weekday/weekend
+newactivityweekday <- newactivity[newactivity$weekday == "weekday",]
+newactivityweekend <- newactivity[newactivity$weekday == "weekend",]
 
+dailypatternweekday <- tapply(newactivityweekday$steps,newactivityweekday$interval,mean)
+dailypatternweekend <- tapply(newactivityweekend$steps,newactivityweekend$interval,mean)
 
-#xyplot(Life.Exp ~ Income | region, data = newactivity, layout = c(1,2))
+par(mfrow = c(2,1), mar = c(4.1,4.1,4.1,2.1)) #  initialiser
+
+plot(dailypatternweekday, type = 'l', main = "Weekday")
+plot(dailypatternweekend, type = 'l', main = "Weekend")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
+```r
+# Activity is more spread over the day during weekends
 ```
 
 
